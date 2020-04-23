@@ -8,24 +8,57 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+def paginate_questions(request, selection):
+  page = request.args.get('page', 1, type=int)
+  start = (page - 1) * QUESTIONS_PER_PAGE
+  end = start + QUESTIONS_PER_PAGE
+  questions = [question.format() for question in selection]
+  curr_questions = questions[start:end]
+  return curr_questions
+
+
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
   setup_db(app)
-  
   '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
+  #CORS(app)
+  cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
   '''
   @TODO: Use the after_request decorator to set Access-Control-Allow
   '''
+  @app.after_request
+  def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+  @app.route('/') 
+  def hello():
+    return jsonify({'message': 'Hello there. You can find api documentation at: https://github.com/SethW89/udacity_trivia_api'})
+  
 
   '''
   @TODO: 
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
+  @app.route('/api/categories')
+  def get_categories():
+    selection = Category.query.order_by(Category.id).all()
+    categories = {category.id : category.type for category in selection}
+
+    if categories == []:
+      abort(404)
+    
+    return jsonify({
+      'success': True,
+      'categories': categories,
+      'total_categories': len(Category.query.all())
+    })
 
 
   '''
@@ -40,6 +73,22 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+  @app.route('/api/questions')
+  def get_questions():
+
+    selection = Question.query.order_by(Question.id).all()
+    curr_questions = paginate_questions(request, selection)
+    selection = [category.format() for category in selection]
+    if curr_questions == []:
+      abort(404)
+      
+    return jsonify({
+      'success': True,
+      'questions': curr_questions,
+      'total_questions': len(Question.query.all()),
+      'categories': 1,#selection,
+      'current_category': None,
+    })
 
   '''
   @TODO: 
@@ -48,6 +97,25 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
+  @app.route('/api/questions/<int:question_id>', methods=['DELETE'])
+  def delete_question(question_id):
+    try:
+      selection = Question.query.get(question_id)
+
+      if selection is None:
+        abort(422)
+
+      question = selection.format()
+      selection.delete()
+      
+      return jsonify({
+        'success': True,
+        'deleted': question_id,
+        'question': question,
+        'total_questions': len(Question.query.all())
+      })
+    except:
+      abort(422)
 
   '''
   @TODO: 
@@ -59,6 +127,29 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+  @app.route('/api/questions', methods=['POST'])
+  def create_question():
+   
+    try:
+     
+      body = request.get_json()
+      question = body.get('question', None)
+      answer = body.get('answer', None)
+      category = body.get('category', None)
+      difficulty = body.get('difficulty', None)
+   
+      item = Question(question=question, answer=answer, category=category, difficulty=difficulty)
+    
+      item.insert()
+      return jsonify({
+        'success': True,
+        'created': item.id,
+        'question_info': item.format(),
+        'total_questions': len(Question.query.all())
+      })
+    except:
+      abort(422)
+
 
   '''
   @TODO: 
@@ -67,9 +158,27 @@ def create_app(test_config=None):
   is a substring of the question. 
 
   TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
+  only questions that include that string within their question. 
   Try using the word "title" to start. 
   '''
+  @app.route('/api/questions/search', methods=['POST'])
+  def search_questions():
+    body = request.get_json()
+    search = body.get('search', None)
+    if search:
+      selection = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(search)))
+      selected_questions = paginate_questions(request, selection)
+
+      return jsonify({
+        'success': True,
+        'questions': selected_questions,
+        'total_questions': len(selection.all())
+      })
+    else:
+      abort(422)
+
+
+
 
   '''
   @TODO: 
@@ -98,6 +207,29 @@ def create_app(test_config=None):
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+  @app.errorhandler(404)
+  def not_found(error):
+    return jsonify({
+        'success': False,
+        'error_code': 404,
+        'message': 'resource not found'
+      }), 404
+
+  @app.errorhandler(405)
+  def not_found(error):
+    return jsonify({
+        'success': False,
+        'error_code': 405,
+        'message': 'method not allowed'
+      }), 405
+  
+  @app.errorhandler(422)
+  def unprocessable(error):
+    return jsonify({
+        'success': False,
+        'error_code': 422,
+        'message': 'unprocessable'
+      }), 422
   
   return app
 
