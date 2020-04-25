@@ -25,6 +25,9 @@ class TriviaTestCase(unittest.TestCase):
             'category':'1', 
             'difficulty': 3,
             }
+        self.search_with_results = {
+            'searchTerm': 'Tim',
+        }
 
         # binds the app to the current context
         with self.app.app_context():
@@ -120,22 +123,33 @@ class TriviaTestCase(unittest.TestCase):
 
 
     def test_get_question_search_with_results(self):
-        res = self.client().post('/api/questions', json={'search': 'Who'})
+        res = self.client().post('/api/questions/search', json=self.search_with_results)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
        # self.assertTrue(data['total_books'])
         #self.assertEqual(len(data['books']), 4)
-
+        #curl localhost:3000/api/questions/search -X POST -H "Content-Type: application/json" -d '{"searchTerm": "tim"}'
     def test_get_question_search_without_results(self):
-        res = self.client().post('/api/questions', json={'search': 'applejacks'})
+        res = self.client().post('/api/questions/search', json={'searchTerm': 'applejacks'})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        #self.assertEqual(data['total_books'], 0)
-        #self.assertEqual(len(data['books']), 0)
+        self.assertEqual(data['total_questions'], 0)
+
+    def test_get_category_questions_success(self):
+        res = self.client().post('/api/categories/1/questions', json={'id': 1})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertNotEqual(data['total_questions'], 0)
+        self.assertEqual(data['current_category'], 1)
+        
+
+  #  def test_get_category_questions_out_of_scope(self):
+
 
 
 

@@ -78,7 +78,9 @@ def create_app(test_config=None):
 
     selection = Question.query.order_by(Question.id).all()
     curr_questions = paginate_questions(request, selection)
-    selection = [category.format() for category in selection]
+    selection = Category.query.order_by(Category.id).all()
+    categories = {category.id : category.type for category in selection}
+    #print(categories)
     if curr_questions == []:
       abort(404)
       
@@ -86,7 +88,7 @@ def create_app(test_config=None):
       'success': True,
       'questions': curr_questions,
       'total_questions': len(Question.query.all()),
-      'categories': 1,#selection,
+      'categories': categories,
       'current_category': None,
     })
 
@@ -163,21 +165,23 @@ def create_app(test_config=None):
   '''
   @app.route('/api/questions/search', methods=['POST'])
   def search_questions():
+    #print('search_questions()')
     body = request.get_json()
-    search = body.get('search', None)
+    search = body.get('searchTerm', None)
+    #print(body.get('searchTerm', None)
     if search:
       selection = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(search)))
       selected_questions = paginate_questions(request, selection)
+      #print(len(selection.all()))
 
       return jsonify({
         'success': True,
         'questions': selected_questions,
-        'total_questions': len(selection.all())
+        'total_questions': len(selection.all()),
+        'current_category': None,
       })
     else:
       abort(422)
-
-
 
 
   '''
@@ -188,7 +192,19 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
-
+  @app.route('/api/categories/<int:category_id>/questions')
+  def get_category_questions(category_id):
+    print("Finally. Shiznets.")
+    #selection = Question.query.filter_by(category = 1).all()
+    selection = Question.query.order_by(Question.id).filter(Question.category == category_id).all()
+    curr_questions = paginate_questions(request, selection)
+ 
+    return jsonify({
+      'success': True,
+      'questions': curr_questions,
+      'total_questions': len(selection),
+      'current_category': category_id
+    })
 
   '''
   @TODO: 
@@ -201,7 +217,40 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/api/quizzes', methods=['POST'])
+  def start_quiz():
+    try:
+      body = request.get_json()
+      previous_questions = body['previous_questions']
+      quiz_category = body['quiz_category']
+      quiz_category_id = int(quiz_category['id'])
+      print(quiz_category_id)
+      print('HELLLLLOOOOOOOO')
+      if quiz_category_id != 0:
+        quiz_questions = Question.query.filter_by(
+          category=quiz_category_id
+          ).filter(
+          Question.id.notin_(previous_questions)
+          ).all()
+      else:
+        quiz_questions = Question.query.all()
+      # Check if we are our of questions.
+      if len(previous_questions) == len(quiz_questions):
+        return jsonify({
+          'success': True,
+          'question': None
+        })
+      # FORMAT and send out the next question.
+      question = random.choice(quiz_questions).format()
+      return jsonify({
+        'success': True,
+        'question': question,
+        'previous_questions': previous_questions,
+      })
 
+    except:
+      # I guess an exception would be our issue? so 500?
+      abort(500)
   '''
   @TODO: 
   Create error handlers for all expected errors 
@@ -216,7 +265,7 @@ def create_app(test_config=None):
       }), 404
 
   @app.errorhandler(405)
-  def not_found(error):
+  def method_not_allowed(error):
     return jsonify({
         'success': False,
         'error_code': 405,

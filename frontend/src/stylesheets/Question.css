@@ -6,6 +6,17 @@
 .categories-list {
   flex-basis: 25%;
   flex-shrink: 2;
+  text-align: center;
+}
+
+.category-list-holder {
+  display: inline-block;
+  width: 200px;
+}
+
+.category-item {
+ /* float: left;*/
+  text-align: left;
 }
 
 .categories-list > form {
