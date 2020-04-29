@@ -81,6 +81,7 @@ POST '/api/quizzes'
 
 
 GET '/api/categories'
+TEST: curl localhost:3000/api/categories
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
@@ -93,6 +94,7 @@ GET '/api/categories'
 
 
 GET '/api/questions'
+TEST: curl localhost:3000/api/questions
  - Fetches a dictionary which is storing the key values of "categories", "current_category", "questions", "success", and "total_questions".
  - Request Arguments: None
  - Returns on success: An object with 5 keys.
@@ -146,17 +148,18 @@ GET '/api/questions'
 
 
 DELETE '/api/questions/<int:question_id>'
+TEST: curl -X DELETE localhost:3000/api/questions/6
 - Deletes a question based on the id provided.
 - Request Arguments: The id.
 - Returns on Success: 4 key values.
-- "success"
-    - True or False. Indicates if an error has occured or not.
-- "deleted"
-    - the id of the question just deleted.
-- "question"
-    - The values of the just deleted question.
-- "total_questions"
-    - Returns the total number of questions in the database after the deletion.
+    - "success"
+        - True or False. Indicates if an error has occured or not.
+    - "deleted"
+        - the id of the question just deleted.
+    - "question"
+        - The values of the just deleted question.
+    - "total_questions"
+        - Returns the total number of questions in the database after the deletion.
 
 {
     "deleted": 6, 
@@ -183,6 +186,177 @@ DELETE '/api/questions/<int:question_id>'
     'message': 'unprocessable'
 }
 
+
+POST '/api/questions'
+TEST: curl -X POST -H "Content-Type: application/json" --data '{"question":"What is the airspeed velocity of a swallow?","answer":"An African or European swallow?","category":"5","difficulty":5}'    localhost:3000/api/questions
+- Creates and stores a new questionin the database. The id is auto generated.
+- Request Arguments:
+    - question, stored as a string
+    - answer, stored as a string
+    - category, an integer, but stored as a string. Refer to GET categories above.
+    - difficulty, stored as an intiger from 1-5.
+- Returns on Success: 4 key values.
+    - "success"
+        - True or False. Indicates if an error has occured or not.
+    - "created"
+        - the id of the question just created.
+    - "question_info"
+        - The values of the just created question.
+    - "total_questions"
+        - Returns the total number of questions in the database after the deletion.
+{
+    "created": 24, 
+    "question_info": {
+        "answer": "An African or European swallow?", 
+        "category": 5, 
+        "difficulty": 5, 
+        "id": 24, 
+        "question": "What is the airspeed velocity of a swallow?"
+    }, 
+    "success": true, 
+    "total_questions": 19
+}
+
+- Return on Failure: one of the below
+{
+    'success': False,
+    'error_code': 400,
+    'message': 'bad request'
+}
+{
+    'success': False,
+    'error_code': 422,
+    'message': 'unprocessable'
+}
+
+POST '/api/questions/search'
+TEST: curl -X POST -H "Content-Type: application/json" --data '{"searchTerm":"swallow"}'    localhost:3000/api/questions/search
+- Searches the database for questions containing the given string, 'serachTerm'.
+- Request Arguments:
+    - "searchTerm", a string. 
+- Returns on Success: 4 key values.
+    - "success"
+        - True or False. Indicates if an error has occured or not.
+    - "current_category"
+        - Currently unused. For future functionality.
+    - "questions"
+        - Contains the dataset (returned as a list) of questions with keys "id", "question", "answer", and "category", which match the search term.
+    - "total_questions"
+        - Returns the total number of questions in the database.
+{
+    "current_category": null, 
+    "questions": [
+        {
+            "answer": "Maya Angelou", 
+            "category": 4, 
+            "difficulty": 2, 
+            "id": 5, 
+            "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+         }, 
+        {
+            "answer": "George Washington Carver", 
+            "category": 4, 
+            "difficulty": 2, 
+            "id": 12, 
+            "question": "Who invented Peanut Butter?"
+        }, 
+        {
+            "answer": "Alexander Fleming", 
+            "category": 1, 
+            "difficulty": 3, 
+            "id": 21, 
+            "question": "Who discovered penicillin?"
+        }
+    ], 
+    "success": true, 
+    "total_questions": 3
+}
+
+- Result on Failure:
+{
+    'success': False,
+    'error_code': 422,
+    'message': 'unprocessable'
+}
+
+
+GET '/api/categories/<int:category_id>/questions'
+TEST: curl localhost:3000/api/categories/6/questions
+- Fetches questions of a specific category in a dictionary which is storing the key values of "categories", "current_category", "questions", "success", and "total_questions".
+ - Request Arguments: The category id.
+ - Returns on success: An object with 5 keys.
+    - "success"
+        - True or False. Indicates if an error has occured or not.
+    - "categories"
+        - Contains the result similar to '/api/categories'.
+    - "current_category"
+        - Currently unused. For future functionality.
+    - "questions"
+        - Contains the entire dataset (returned as a list) of questions with keys "id", "question", "answer", "category"
+        - "category is stored as the numerical representation. e.g. it would return '1' rather than 'Science'. 
+    - "total_questions"
+        - Returns the total number of questions in the database.
+{
+    "current_category": 6, 
+    "questions": [
+    {
+        "answer": "Brazil", 
+        "category": 6, 
+        "difficulty": 3, 
+        "id": 10, 
+        "question": "Which is the only team to play in every soccer World Cup tournament?"
+    }, 
+    {
+        "answer": "Uruguay", 
+        "category": 6, 
+        "difficulty": 4, 
+        "id": 11, 
+        "question": "Which country won the first ever soccer World Cup in 1930?"
+    }
+    ], 
+    "success": true, 
+    "total_questions": 2
+}
+
+- Return on Failure:
+{
+    'success': False,
+    'error_code': 422,
+    'message': 'unprocessable'
+}
+
+
+
+POST '/api/quizzes'
+TEST:curl -X POST -H "Content-Type: application/json" --data '{"previous_questions":[22],"quiz_category":{"type":"Science","id":"1"}}' localhost:3000/api/quizzes
+- Fetches a question based on the chosen category (0 is all). The ids of previously asked questions can be sent as a list so they will not be repeated.
+- Request Arguments: The category id, and id of previously asked questions. 
+- Returns on success: An object with 5 keys.
+    - "success"
+        - True or False. Indicates if an error has occured or not.
+    - "questions"
+        - Contains a question with keys "id", "question", "answer", and "category".
+    - "previous_questions"
+        - list of previous questions asked.
+
+{
+    'success': True, 
+    'question': {
+        'id': 21, 
+        'question': 'Who discovered penicillin?', 
+        'answer': 'Alexander Fleming', 
+        'category': 1, 
+        'difficulty': 3
+        }, 
+    'previous_questions': [22]
+}
+
+- Return on Failure:
+{
+  "error_code": 400, 
+  "message": "bad request", 
+  "success": false
+}
 ```
 
 

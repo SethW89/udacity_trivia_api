@@ -220,7 +220,6 @@ def create_app(test_config=None):
   @app.route('/api/quizzes', methods=['POST'])
   def start_quiz():
     try:
-      
       body = request.get_json()
       previous_questions = body['previous_questions']
       quiz_category = body['quiz_category']
@@ -243,6 +242,11 @@ def create_app(test_config=None):
         })
       # FORMAT and send out the next question.
       question = random.choice(quiz_questions).format()
+      # print({
+      #   'success': True,
+      #   'question': question,
+      #   'previous_questions': previous_questions,
+      # })
       return jsonify({
         'success': True,
         'question': question,
