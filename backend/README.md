@@ -90,7 +90,7 @@ curl localhost:3000/api/categories
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-```bash
+```JSON
 {
     '1' : "Science",
     '2' : "Art",
@@ -121,7 +121,7 @@ curl localhost:3000/api/questions
         - "category is stored as the numerical representation. e.g. it would return '1' rather than 'Science'. 
     - "total_questions"
         - Returns the total number of questions in the database.
-```bash
+```JSON
 {
     "categories": {
         "1": "Science", 
@@ -153,7 +153,7 @@ curl localhost:3000/api/questions
 }
 ```
 - Returns on failure:
-```bash
+```JSON
 {
     'success': False,
     'error_code': 404,
@@ -178,7 +178,7 @@ curl -X DELETE localhost:3000/api/questions/6
         - The values of the just deleted question.
     - "total_questions"
         - Returns the total number of questions in the database after the deletion.
-```bash
+```JSON
 {
     "deleted": 6, 
     "question": {
@@ -193,14 +193,14 @@ curl -X DELETE localhost:3000/api/questions/6
 }
 ```
 - Return on Failure: one of the below.
-```bash
+```JSON
 {
     'success': False,
     'error_code': 404,
     'message': 'resource not found'
 }
 ```
-```bash
+```JSON
 {
     'success': False,
     'error_code': 422,
@@ -229,7 +229,7 @@ curl -X POST -H "Content-Type: application/json" --data '{"question":"What is th
         - The values of the just created question.
     - "total_questions"
         - Returns the total number of questions in the database after the deletion.
-```bash
+```JSON
 {
     "created": 24, 
     "question_info": {
@@ -244,14 +244,14 @@ curl -X POST -H "Content-Type: application/json" --data '{"question":"What is th
 }
 ```
 - Return on Failure: one of the below
-```bash
+```JSON
 {
     'success': False,
     'error_code': 400,
     'message': 'bad request'
 }
 ```
-```bash
+```JSON
 {
     'success': False,
     'error_code': 422,
@@ -277,7 +277,7 @@ curl -X POST -H "Content-Type: application/json" --data '{"searchTerm":"swallow"
         - Contains the dataset (returned as a list) of questions with keys "id", "question", "answer", and "category", which match the search term.
     - "total_questions"
         - Returns the total number of questions in the database.
-```bash
+```JSON
 {
     "current_category": null, 
     "questions": [
@@ -308,7 +308,7 @@ curl -X POST -H "Content-Type: application/json" --data '{"searchTerm":"swallow"
 }
 ```
 - Result on Failure:
-```bash
+```JSON
 {
     'success': False,
     'error_code': 422,
@@ -336,7 +336,7 @@ curl localhost:3000/api/categories/6/questions
         - "category is stored as the numerical representation. e.g. it would return '1' rather than 'Science'. 
     - "total_questions"
         - Returns the total number of questions in the database.
-```bash
+```JSON
 {
     "current_category": 6, 
     "questions": [
@@ -360,7 +360,7 @@ curl localhost:3000/api/categories/6/questions
 }
 ```
 - Return on Failure:
-```bash
+```JSON
 {
     'success': False,
     'error_code': 422,
@@ -382,7 +382,7 @@ TEST:
         - Contains a question with keys "id", "question", "answer", and "category".
     - "previous_questions"
         - list of previous questions asked.
-```bash
+```JSON
 {
     'success': True, 
     'question': {
@@ -396,7 +396,7 @@ TEST:
 }
 ```
 - Return on Failure:
-```bash
+```JSON
 {
   "error_code": 400, 
   "message": "bad request", 
