@@ -92,12 +92,12 @@ curl localhost:3000/api/categories
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
 ```JSON
 {
-    '1' : "Science",
-    '2' : "Art",
-    '3' : "Geography",
-    '4' : "History",
-    '5' : "Entertainment",
-    '6' : "Sports"
+    "1" : "Science",
+    "2" : "Art",
+    "3" : "Geography",
+    "4" : "History",
+    "5" : "Entertainment",
+    "6" : "Sports"
 }
 ```
 
@@ -155,9 +155,9 @@ curl localhost:3000/api/questions
 - Returns on failure:
 ```JSON
 {
-    'success': False,
-    'error_code': 404,
-    'message': 'resource not found'
+    "success": False,
+    "error_code": 404,
+    "message": "resource not found"
 }
 ```
 
@@ -195,16 +195,16 @@ curl -X DELETE localhost:3000/api/questions/6
 - Return on Failure: one of the below.
 ```JSON
 {
-    'success': False,
-    'error_code': 404,
-    'message': 'resource not found'
+    "success": False,
+    "error_code": 404,
+    "message": "resource not found"
 }
 ```
 ```JSON
 {
-    'success': False,
-    'error_code': 422,
-    'message': 'unprocessable'
+    "success": False,
+    "error_code": 422,
+    "message": "unprocessable"
 }
 ```
 
@@ -246,16 +246,16 @@ curl -X POST -H "Content-Type: application/json" --data '{"question":"What is th
 - Return on Failure: one of the below
 ```JSON
 {
-    'success': False,
-    'error_code': 400,
-    'message': 'bad request'
+    "success": False,
+    "error_code": 400,
+    "message": "bad request"
 }
 ```
 ```JSON
 {
-    'success': False,
-    'error_code': 422,
-    'message': 'unprocessable'
+    "success": False,
+    "error_code": 422,
+    "message": "unprocessable"
 }
 ```
 
@@ -310,9 +310,9 @@ curl -X POST -H "Content-Type: application/json" --data '{"searchTerm":"swallow"
 - Result on Failure:
 ```JSON
 {
-    'success': False,
-    'error_code': 422,
-    'message': 'unprocessable'
+    "success": False,
+    "error_code": 422,
+    "message": "unprocessable"
 }
 ```
 
@@ -362,9 +362,9 @@ curl localhost:3000/api/categories/6/questions
 - Return on Failure:
 ```JSON
 {
-    'success': False,
-    'error_code': 422,
-    'message': 'unprocessable'
+    "success": False,
+    "error_code": 422,
+    "message": "unprocessable"
 }
 ```
 
@@ -384,15 +384,15 @@ TEST:
         - list of previous questions asked.
 ```JSON
 {
-    'success': True, 
-    'question': {
-        'id': 21, 
-        'question': 'Who discovered penicillin?', 
-        'answer': 'Alexander Fleming', 
-        'category': 1, 
-        'difficulty': 3
+    "success": True, 
+    "question": {
+        "id": 21, 
+        "question": "Who discovered penicillin?", 
+        "answer": "Alexander Fleming", 
+        "category": 1, 
+        "difficulty": 3
         }, 
-    'previous_questions': [22]
+    "previous_questions": [22]
 }
 ```
 - Return on Failure:
