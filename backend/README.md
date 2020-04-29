@@ -117,6 +117,7 @@ curl localhost:3000/api/questions
         - "category is stored as the numerical representation. e.g. it would return '1' rather than 'Science'. 
     - "total_questions"
         - Returns the total number of questions in the database.
+```bash
 {
     "categories": {
         "1": "Science", 
@@ -146,14 +147,15 @@ curl localhost:3000/api/questions
     "success": true, 
     "total_questions": 19
 }
-
+```
 - Returns on failure:
+```bash
 {
     'success': False,
     'error_code': 404,
     'message': 'resource not found'
 }
-
+```
 
 #### DELETE '/api/questions/<int:question_id>'
 TEST: 
@@ -171,7 +173,7 @@ curl -X DELETE localhost:3000/api/questions/6
         - The values of the just deleted question.
     - "total_questions"
         - Returns the total number of questions in the database after the deletion.
-
+```bash
 {
     "deleted": 6, 
     "question": {
@@ -184,19 +186,22 @@ curl -X DELETE localhost:3000/api/questions/6
     "success": true, 
     "total_questions": 18
 }
-
+```
 - Return on Failure: one of the below.
+```bash
 {
     'success': False,
     'error_code': 404,
     'message': 'resource not found'
 }
+```
+```bash
 {
     'success': False,
     'error_code': 422,
     'message': 'unprocessable'
 }
-
+```
 
 #### POST '/api/questions'
 TEST: 
@@ -218,6 +223,7 @@ curl -X POST -H "Content-Type: application/json" --data '{"question":"What is th
         - The values of the just created question.
     - "total_questions"
         - Returns the total number of questions in the database after the deletion.
+```bash
 {
     "created": 24, 
     "question_info": {
@@ -230,19 +236,22 @@ curl -X POST -H "Content-Type: application/json" --data '{"question":"What is th
     "success": true, 
     "total_questions": 19
 }
-
+```
 - Return on Failure: one of the below
+```bash
 {
     'success': False,
     'error_code': 400,
     'message': 'bad request'
 }
+```
+```bash
 {
     'success': False,
     'error_code': 422,
     'message': 'unprocessable'
 }
-
+```
 #### POST '/api/questions/search'
 TEST: 
 ```bash curl -X POST -H "Content-Type: application/json" --data '{"searchTerm":"swallow"}' localhost:3000/api/questions/search
@@ -259,6 +268,7 @@ TEST:
         - Contains the dataset (returned as a list) of questions with keys "id", "question", "answer", and "category", which match the search term.
     - "total_questions"
         - Returns the total number of questions in the database.
+```bash
 {
     "current_category": null, 
     "questions": [
@@ -287,14 +297,15 @@ TEST:
     "success": true, 
     "total_questions": 3
 }
-
+```
 - Result on Failure:
+```bash
 {
     'success': False,
     'error_code': 422,
     'message': 'unprocessable'
 }
-
+```
 
 #### GET '/api/categories/<int:category_id>/questions'
 TEST: 
@@ -315,6 +326,7 @@ curl localhost:3000/api/categories/6/questions
         - "category is stored as the numerical representation. e.g. it would return '1' rather than 'Science'. 
     - "total_questions"
         - Returns the total number of questions in the database.
+```bash
 {
     "current_category": 6, 
     "questions": [
@@ -336,14 +348,15 @@ curl localhost:3000/api/categories/6/questions
     "success": true, 
     "total_questions": 2
 }
-
+```
 - Return on Failure:
+```bash
 {
     'success': False,
     'error_code': 422,
     'message': 'unprocessable'
 }
-
+```
 
 
 #### POST '/api/quizzes'
@@ -359,7 +372,7 @@ TEST:
         - Contains a question with keys "id", "question", "answer", and "category".
     - "previous_questions"
         - list of previous questions asked.
-
+```bash
 {
     'success': True, 
     'question': {
@@ -371,14 +384,15 @@ TEST:
         }, 
     'previous_questions': [22]
 }
-
+```
 - Return on Failure:
+```bash
 {
   "error_code": 400, 
   "message": "bad request", 
   "success": false
 }
-
+```
 
 
 ## Testing
