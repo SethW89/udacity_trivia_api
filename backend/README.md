@@ -155,7 +155,7 @@ curl localhost:3000/api/questions
 - Returns on failure:
 ```JSON
 {
-    "success": False,
+    "success": false,
     "error_code": 404,
     "message": "resource not found"
 }
@@ -195,14 +195,14 @@ curl -X DELETE localhost:3000/api/questions/6
 - Return on Failure: one of the below.
 ```JSON
 {
-    "success": False,
+    "success": false,
     "error_code": 404,
     "message": "resource not found"
 }
 ```
 ```JSON
 {
-    "success": False,
+    "success": false,
     "error_code": 422,
     "message": "unprocessable"
 }
@@ -246,14 +246,14 @@ curl -X POST -H "Content-Type: application/json" --data '{"question":"What is th
 - Return on Failure: one of the below
 ```JSON
 {
-    "success": False,
+    "success": false,
     "error_code": 400,
     "message": "bad request"
 }
 ```
 ```JSON
 {
-    "success": False,
+    "success": false,
     "error_code": 422,
     "message": "unprocessable"
 }
@@ -310,7 +310,7 @@ curl -X POST -H "Content-Type: application/json" --data '{"searchTerm":"swallow"
 - Result on Failure:
 ```JSON
 {
-    "success": False,
+    "success": false,
     "error_code": 422,
     "message": "unprocessable"
 }
@@ -333,7 +333,7 @@ curl localhost:3000/api/categories/6/questions
         - Currently unused. For future functionality.
     - "questions"
         - Contains the entire dataset (returned as a list) of questions with keys "id", "question", "answer", "category"
-        - "category is stored as the numerical representation. e.g. it would return '1' rather than 'Science'. 
+        - "category is stored as the numerical representation. e.g. it would return "1" rather than "Science". 
     - "total_questions"
         - Returns the total number of questions in the database.
 ```JSON
@@ -362,7 +362,7 @@ curl localhost:3000/api/categories/6/questions
 - Return on Failure:
 ```JSON
 {
-    "success": False,
+    "success": false,
     "error_code": 422,
     "message": "unprocessable"
 }
@@ -384,7 +384,7 @@ TEST:
         - list of previous questions asked.
 ```JSON
 {
-    "success": True, 
+    "success": true, 
     "question": {
         "id": 21, 
         "question": "Who discovered penicillin?", 
