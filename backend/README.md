@@ -73,13 +73,13 @@ REVIEW_COMMENT
 This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
 
 ### Endpoints
-GET '/api/categories'
-GET '/api/questions'
-DELETE '/api/questions/<int:question_id>'
-POST '/api/questions'
-POST '/api/questions/search'
-GET '/api/categories/<int:category_id>/questions'
-POST '/api/quizzes'
+- GET '/api/categories'
+- GET '/api/questions'
+- DELETE '/api/questions/<int:question_id>'
+- POST '/api/questions'
+- POST '/api/questions/search'
+- GET '/api/categories/<int:category_id>/questions'
+- POST '/api/quizzes'
 
 
 #### GET '/api/categories'
@@ -90,12 +90,16 @@ curl localhost:3000/api/categories
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+```bash
+{
+    '1' : "Science",
+    '2' : "Art",
+    '3' : "Geography",
+    '4' : "History",
+    '5' : "Entertainment",
+    '6' : "Sports"
+}
+```
 
 
 #### GET '/api/questions'
@@ -157,6 +161,7 @@ curl localhost:3000/api/questions
 }
 ```
 
+
 #### DELETE '/api/questions/<int:question_id>'
 TEST: 
 ```bash
@@ -202,6 +207,7 @@ curl -X DELETE localhost:3000/api/questions/6
     'message': 'unprocessable'
 }
 ```
+
 
 #### POST '/api/questions'
 TEST: 
@@ -252,6 +258,8 @@ curl -X POST -H "Content-Type: application/json" --data '{"question":"What is th
     'message': 'unprocessable'
 }
 ```
+
+
 #### POST '/api/questions/search'
 TEST: 
 ```bash curl -X POST -H "Content-Type: application/json" --data '{"searchTerm":"swallow"}' localhost:3000/api/questions/search
@@ -306,6 +314,7 @@ TEST:
     'message': 'unprocessable'
 }
 ```
+
 
 #### GET '/api/categories/<int:category_id>/questions'
 TEST: 
