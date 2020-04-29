@@ -67,10 +67,12 @@ One note before you delve into your tasks: for each endpoint you are expected to
 9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
 REVIEW_COMMENT
-```
+
+
+## API DOCUMENTATION
 This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
 
-Endpoints
+### Endpoints
 GET '/api/categories'
 GET '/api/questions'
 DELETE '/api/questions/<int:question_id>'
@@ -80,8 +82,11 @@ GET '/api/categories/<int:category_id>/questions'
 POST '/api/quizzes'
 
 
-GET '/api/categories'
-TEST: curl localhost:3000/api/categories
+#### GET '/api/categories'
+TEST: 
+```bash
+curl localhost:3000/api/categories
+```
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
@@ -93,8 +98,11 @@ TEST: curl localhost:3000/api/categories
 '6' : "Sports"}
 
 
-GET '/api/questions'
-TEST: curl localhost:3000/api/questions
+#### GET '/api/questions'
+TEST: 
+```bash
+curl localhost:3000/api/questions
+```
  - Fetches a dictionary which is storing the key values of "categories", "current_category", "questions", "success", and "total_questions".
  - Request Arguments: None
  - Returns on success: An object with 5 keys.
@@ -147,8 +155,11 @@ TEST: curl localhost:3000/api/questions
 }
 
 
-DELETE '/api/questions/<int:question_id>'
-TEST: curl -X DELETE localhost:3000/api/questions/6
+#### DELETE '/api/questions/<int:question_id>'
+TEST: 
+```bash
+curl -X DELETE localhost:3000/api/questions/6
+```
 - Deletes a question based on the id provided.
 - Request Arguments: The id.
 - Returns on Success: 4 key values.
@@ -187,8 +198,11 @@ TEST: curl -X DELETE localhost:3000/api/questions/6
 }
 
 
-POST '/api/questions'
-TEST: curl -X POST -H "Content-Type: application/json" --data '{"question":"What is the airspeed velocity of a swallow?","answer":"An African or European swallow?","category":"5","difficulty":5}'    localhost:3000/api/questions
+#### POST '/api/questions'
+TEST: 
+```bash
+curl -X POST -H "Content-Type: application/json" --data '{"question":"What is the airspeed velocity of a swallow?","answer":"An African or European swallow?","category":"5","difficulty":5}' localhost:3000/api/questions
+```
 - Creates and stores a new questionin the database. The id is auto generated.
 - Request Arguments:
     - question, stored as a string
@@ -229,8 +243,10 @@ TEST: curl -X POST -H "Content-Type: application/json" --data '{"question":"What
     'message': 'unprocessable'
 }
 
-POST '/api/questions/search'
-TEST: curl -X POST -H "Content-Type: application/json" --data '{"searchTerm":"swallow"}'    localhost:3000/api/questions/search
+#### POST '/api/questions/search'
+TEST: 
+```bash curl -X POST -H "Content-Type: application/json" --data '{"searchTerm":"swallow"}' localhost:3000/api/questions/search
+```
 - Searches the database for questions containing the given string, 'serachTerm'.
 - Request Arguments:
     - "searchTerm", a string. 
@@ -280,8 +296,11 @@ TEST: curl -X POST -H "Content-Type: application/json" --data '{"searchTerm":"sw
 }
 
 
-GET '/api/categories/<int:category_id>/questions'
-TEST: curl localhost:3000/api/categories/6/questions
+#### GET '/api/categories/<int:category_id>/questions'
+TEST: 
+```bash
+curl localhost:3000/api/categories/6/questions
+```
 - Fetches questions of a specific category in a dictionary which is storing the key values of "categories", "current_category", "questions", "success", and "total_questions".
  - Request Arguments: The category id.
  - Returns on success: An object with 5 keys.
@@ -327,8 +346,10 @@ TEST: curl localhost:3000/api/categories/6/questions
 
 
 
-POST '/api/quizzes'
-TEST:curl -X POST -H "Content-Type: application/json" --data '{"previous_questions":[22],"quiz_category":{"type":"Science","id":"1"}}' localhost:3000/api/quizzes
+#### POST '/api/quizzes'
+TEST: 
+```bash curl -X POST -H "Content-Type: application/json" --data '{"previous_questions":[22],"quiz_category":{"type":"Science","id":"1"}}' localhost:3000/api/quizzes
+```
 - Fetches a question based on the chosen category (0 is all). The ids of previously asked questions can be sent as a list so they will not be repeated.
 - Request Arguments: The category id, and id of previously asked questions. 
 - Returns on success: An object with 5 keys.
@@ -357,7 +378,7 @@ TEST:curl -X POST -H "Content-Type: application/json" --data '{"previous_questio
   "message": "bad request", 
   "success": false
 }
-```
+
 
 
 ## Testing
