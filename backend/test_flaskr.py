@@ -25,8 +25,24 @@ class TriviaTestCase(unittest.TestCase):
             'category':'1', 
             'difficulty': 3,
             }
+        self.new_book1 = {
+            'question': 'What is the airspeed velocity...',
+            'answer':'', 
+            'category':'1', 
+            'difficulty': 3,
+            }
         self.search_with_results = {
             'searchTerm': 'Tim',
+        }
+        self.new_quiz = {
+            #'id': 1,
+            'previous_questions': [],
+            'quiz_category': {'type': 'Science', 'id': '1'},
+        }
+        self.new_quiz2 = {
+            #'id': 1,
+            'previous_questions': [],
+            'quiz_category': {'type': 'Cats', 'id': '20'},
         }
 
         # binds the app to the current context
@@ -44,8 +60,7 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
-   
-    def test_get_paginated_questions(self):
+    def test_get_paginated_questions_200(self):
         res = self.client().get('/api/questions')
         data = json.loads(res.data)
 
@@ -54,7 +69,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['total_questions'])
         self.assertTrue(data['questions'])
     
-    def test_404_sent_requestion_beyond_valid_page(self):
+    def test_get_paginated_questions_404_out_of_scope(self):
         res = self.client().get('/api/questions?page=10000')
         data = json.loads(res.data)
 
@@ -62,7 +77,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resource not found')
         self.assertEqual(data['error_code'], 404)
-
+    # Testing GET '/api/categories'
     def test_get_categories_200(self):
         res = self.client().get('/api/categories')
         data = json.loads(res.data)
@@ -71,58 +86,58 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['total_categories'])
         self.assertTrue(data['categories'])
-
-# TODO: Figure out how to mimic nothing in the db. Maybe run this after clearing the db?
-    # def test_get_categores_404(self):
-    #     res = self.client().get('/api/categories')
-    #     data = json.loads(res.data)
-
-    #     self.assertEqual(res.status_code,404)
-    #     self.assertEqual(data['success'], False)
-    #     self.assertEqual(data['message'], 'resource not found')
-    #     self.assertEqual(data['error_code'], 404)
-
-#   TEST: When you submit a question on the "Add" tab, 
-#   the form will clear and the question will appear at the end of the last page
-#   of the questions list in the "List" tab.  
-    def test_delete_question(self):
-        res = self.client().delete('/api/questions/2')
+    def test_get_categores_405(self):
+        res = self.client().post('/api/categories')
         data = json.loads(res.data)
 
-        question = Question.query.filter(Question.id == 2).one_or_none()
+        self.assertEqual(res.status_code,405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'method not allowed')
+        self.assertEqual(data['error_code'], 405)
 
+    # Test DELETE '/api/questions/<int:question_id>'
+    def test_delete_question_200(self):
+        res = self.client().delete('/api/questions/2')
+        data = json.loads(res.data)
+        question = Question.query.filter(Question.id == 2).one_or_none()
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['deleted'], 2)
         self.assertTrue(data['total_questions'])
         self.assertTrue(len(data['question']))
         self.assertEqual(question, None)
-
-    def test_delete_question_out_of_scope(self):
-        # Should return 422
-        res = self.client().delete('/api/questions/2000')
+   
+    def test_delete_question_does_not_exist_404(self):
+        # Must run AFTER successful delete test
+        res = self.client().delete('/api/questions/2')
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 422)
+        self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'unprocessable')
-        self.assertEqual(data['error_code'], 422)
+        self.assertEqual(data['message'], 'resource not found')
+        self.assertEqual(data['error_code'], 404)
 
-
-    def test_create_question_success(self):
-        
+#   TEST: When you submit a question on the "Add" tab, 
+#   the form will clear and the question will appear at the end of the last page
+#   of the questions list in the "List" tab.  
+    def test_create_question_200(self):
         res = self.client().post('/api/questions', json=self.new_book)
-       
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code,200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['question_info'])
         self.assertTrue(data['total_questions'])
+    def test_create_question_400(self):
+        res = self.client().post('/api/questions', json=self.new_book1)
+        data = json.loads(res.data)
 
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'bad request')
+    
 
-
-    def test_get_question_search_with_results(self):
+    def test_get_question_search_with_results_200(self):
         res = self.client().post('/api/questions/search', json=self.search_with_results)
         data = json.loads(res.data)
 
@@ -131,7 +146,7 @@ class TriviaTestCase(unittest.TestCase):
        # self.assertTrue(data['total_books'])
         #self.assertEqual(len(data['books']), 4)
         #curl localhost:3000/api/questions/search -X POST -H "Content-Type: application/json" -d '{"searchTerm": "tim"}'
-    def test_get_question_search_without_results(self):
+    def test_get_question_search_with_no_results_200(self):
         res = self.client().post('/api/questions/search', json={'searchTerm': 'applejacks'})
         data = json.loads(res.data)
 
@@ -139,19 +154,30 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['total_questions'], 0)
 
-    def test_get_category_questions_success(self):
-        res = self.client().post('/api/categories/1/questions', json={'id': 1})
+    def test_get_category_questions_200(self):
+        res = self.client().get('/api/categories/1/questions')
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertNotEqual(data['total_questions'], 0)
-        self.assertEqual(data['current_category'], 1)
-        
+        self.assertEqual(data['current_category'], 1)     
 
-  #  def test_get_category_questions_out_of_scope(self):
+    def test_get_category_questions_out_of_scope_404(self):
+        res = self.client().get('/api/categories/10/questions')
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
 
+    def test_create_quiz_200(self):
+        res = self.client().post('/api/quizzes', json=self.new_quiz)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['question'])
 
-
+    def test_create_quiz_400(self):
+        res = self.client().post('/api/quizzes', json=self.new_quiz2)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 400)
 
 
 # Make the tests conveniently executable

@@ -71,12 +71,16 @@ REVIEW_COMMENT
 This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
 
 Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
+GET '/api/categories'
+GET '/api/questions'
+DELETE '/api/questions/<int:question_id>'
+POST '/api/questions'
+POST '/api/questions/search'
+GET '/api/categories/<int:category_id>/questions'
+POST '/api/quizzes'
 
-GET '/categories'
+
+GET '/api/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
@@ -86,6 +90,98 @@ GET '/categories'
 '4' : "History",
 '5' : "Entertainment",
 '6' : "Sports"}
+
+
+GET '/api/questions'
+ - Fetches a dictionary which is storing the key values of "categories", "current_category", "questions", "success", and "total_questions".
+ - Request Arguments: None
+ - Returns on success: An object with 5 keys.
+    - "success"
+        - True or False. Indicates if an error has occured or not.
+    - "categories"
+        - Contains the result similar to '/api/categories'.
+    - "current_category"
+        - Currently unused. For future functionality.
+    - "questions"
+        - Contains the entire dataset (returned as a list) of questions with keys "id", "question", "answer", "category"
+        - "category is stored as the numerical representation. e.g. it would return '1' rather than 'Science'. 
+    - "total_questions"
+        - Returns the total number of questions in the database.
+{
+    "categories": {
+        "1": "Science", 
+        "2": "Art", 
+        "3": "Geography", 
+        "4": "History", 
+        "5": "Entertainment", 
+        "6": "Sports"
+    }, 
+    "current_category": null, 
+    "questions": [
+        {
+            "answer": "Apollo 13", 
+            "category": 5, 
+            "difficulty": 4, 
+            "id": 2, 
+            "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        }, 
+        {
+            "answer": "Tom Cruise", 
+            "category": 5, 
+            "difficulty": 4, 
+            "id": 4, 
+            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+        }...
+    ],
+    "success": true, 
+    "total_questions": 19
+}
+
+- Returns on failure:
+{
+    'success': False,
+    'error_code': 404,
+    'message': 'resource not found'
+}
+
+
+DELETE '/api/questions/<int:question_id>'
+- Deletes a question based on the id provided.
+- Request Arguments: The id.
+- Returns on Success: 4 key values.
+- "success"
+    - True or False. Indicates if an error has occured or not.
+- "deleted"
+    - the id of the question just deleted.
+- "question"
+    - The values of the just deleted question.
+- "total_questions"
+    - Returns the total number of questions in the database after the deletion.
+
+{
+    "deleted": 6, 
+    "question": {
+        "answer": "Edward Scissorhands", 
+        "category": 5, 
+        "difficulty": 3, 
+        "id": 6, 
+        "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    }, 
+    "success": true, 
+    "total_questions": 18
+}
+
+- Return on Failure: one of the below.
+{
+    'success': False,
+    'error_code': 404,
+    'message': 'resource not found'
+}
+{
+    'success': False,
+    'error_code': 422,
+    'message': 'unprocessable'
+}
 
 ```
 

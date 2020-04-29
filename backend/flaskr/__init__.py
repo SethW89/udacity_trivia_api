@@ -101,12 +101,12 @@ def create_app(test_config=None):
   '''
   @app.route('/api/questions/<int:question_id>', methods=['DELETE'])
   def delete_question(question_id):
+    selection = Question.query.get(question_id)
+    #print(selection)
+    if selection is None:
+      abort(404)
     try:
       selection = Question.query.get(question_id)
-
-      if selection is None:
-        abort(422)
-
       question = selection.format()
       selection.delete()
       
@@ -131,18 +131,18 @@ def create_app(test_config=None):
   '''
   @app.route('/api/questions', methods=['POST'])
   def create_question():
-   
+    body = request.get_json()
+    question = body.get('question', None)
+    answer = body.get('answer', None)
+    category = body.get('category', None)
+    difficulty = body.get('difficulty', None)
+    if (question == '') or (answer == '') or (category == '') or (difficulty == ''):
+        abort(400)
+
     try:
-     
-      body = request.get_json()
-      question = body.get('question', None)
-      answer = body.get('answer', None)
-      category = body.get('category', None)
-      difficulty = body.get('difficulty', None)
-   
       item = Question(question=question, answer=answer, category=category, difficulty=difficulty)
-    
       item.insert()
+
       return jsonify({
         'success': True,
         'created': item.id,
@@ -150,7 +150,7 @@ def create_app(test_config=None):
         'total_questions': len(Question.query.all())
       })
     except:
-      abort(422)
+      abort(500)
 
 
   '''
@@ -194,9 +194,9 @@ def create_app(test_config=None):
   '''
   @app.route('/api/categories/<int:category_id>/questions')
   def get_category_questions(category_id):
-    print("Finally. Shiznets.")
-    #selection = Question.query.filter_by(category = 1).all()
     selection = Question.query.order_by(Question.id).filter(Question.category == category_id).all()
+    if len(selection) == 0:
+      abort(404)
     curr_questions = paginate_questions(request, selection)
  
     return jsonify({
@@ -220,12 +220,13 @@ def create_app(test_config=None):
   @app.route('/api/quizzes', methods=['POST'])
   def start_quiz():
     try:
+      
       body = request.get_json()
       previous_questions = body['previous_questions']
       quiz_category = body['quiz_category']
       quiz_category_id = int(quiz_category['id'])
-      print(quiz_category_id)
-      print('HELLLLLOOOOOOOO')
+      if quiz_category_id > 6:
+        abort(400)
       if quiz_category_id != 0:
         quiz_questions = Question.query.filter_by(
           category=quiz_category_id
@@ -234,7 +235,7 @@ def create_app(test_config=None):
           ).all()
       else:
         quiz_questions = Question.query.all()
-      # Check if we are our of questions.
+      # Check if we are out of questions.
       if len(previous_questions) == len(quiz_questions):
         return jsonify({
           'success': True,
@@ -249,13 +250,20 @@ def create_app(test_config=None):
       })
 
     except:
-      # I guess an exception would be our issue? so 500?
-      abort(500)
+      abort(400)
   '''
   @TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+  @app.errorhandler(400)
+  def not_found(error):
+    return jsonify({
+        'success': False,
+        'error_code': 400,
+        'message': 'bad request'
+      }), 400
+      
   @app.errorhandler(404)
   def not_found(error):
     return jsonify({
